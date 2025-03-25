@@ -1,0 +1,62 @@
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+FOURSQUARE_API_KEY = os.getenv("FOURSQUARE_API_KEY")
+
+HEADERS = {
+    "Authorization": FOURSQUARE_API_KEY
+}
+
+def search_places(lat: float, lon: float, category: str, radius: int = 1000):
+    category_map = {
+        "galleries": "10027",       # Art Galleries / Museums
+        "auctions": "12031",        # Auction Houses
+        "restaurants": "13065",     # Fine Dining Restaurants
+    }
+
+    category_id = category_map.get(category.lower())
+    if not category_id:
+        return []
+
+    url = "https://api.foursquare.com/v3/places/search"
+    params = {
+        "ll": f"{lat},{lon}",
+        "categories": category_id,
+        "radius": radius,
+        "open_now": True,
+        "limit": 20
+    }
+
+    response = requests.get(url, headers=HEADERS, params=params)
+    data = response.json()
+
+    results = []
+    for place in data.get("results", []):
+        name = place.get("name")
+        location = place.get("location", {})
+        latlon = place.get("geocodes", {}).get("main", {})
+        photo_url = get_photo(place.get("fsq_id"))
+
+        results.append({
+            "name": name,
+            "address": location.get("formatted_address"),
+            "lat": latlon.get("latitude"),
+            "lon": latlon.get("longitude"),
+            "thumbnail": photo_url,
+            "type": category,
+        })
+
+    return results
+
+
+def get_photo(place_id):
+    url = f"https://api.foursquare.com/v3/places/{place_id}/photos"
+    response = requests.get(url, headers=HEADERS)
+    data = response.json()
+    if data:
+        photo = data[0]
+        return f"{photo['prefix']}original{photo['suffix']}"
+    return None
+

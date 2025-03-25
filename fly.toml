@@ -1,0 +1,30 @@
+# fly.toml app configuration file generated for artwalk-backend-solitary-night-4461 on 2025-03-24T14:52:02Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+# fly.toml configuration for artwalk-backend
+
+app = "artwalk-backend"
+primary_region = "cdg"
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1
+
+
+[build]
+  dockerfile = "Dockerfile"
+
