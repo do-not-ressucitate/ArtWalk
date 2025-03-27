@@ -9,10 +9,9 @@ HEADERS = {
     "Authorization": FOURSQUARE_API_KEY
 }
 
-def search_places(lat: float, lon: float, category: str, radius: int = 1000):
+def search_places(lat: float, lon: float, category: str, radius: int = 3000):
     category_map = {
-        "galleries": "10027",       # Art Galleries / Museums
-        "auctions": "12031",        # Auction Houses
+        "galleries": "4bf58dd8d48988d1e2931735",  # Contemporary Art Galleries        "auctions": "12031",        # Auction Houses
         "restaurants": "13065",     # Fine Dining Restaurants
     }
 
