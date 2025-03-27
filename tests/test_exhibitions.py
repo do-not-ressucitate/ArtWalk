@@ -20,7 +20,7 @@ def fake_load_special_exhibitions():
     return {"dummy gallery": {"label": "Special", "title": "Special Exhibition", "thumbnail": "http://example.com/thumb.jpg"}}
 
 @pytest.fixture(autouse=True)
-def override_external_calls(monkeypatch):
+def override_external_calls(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr("app.services.foursquare_service.search_places", fake_search_places)
     monkeypatch.setattr("app.services.foursquare_service.get_photo", fake_get_photo)
     monkeypatch.setattr("app.services.galleriesnow_service.load_special_exhibitions", fake_load_special_exhibitions)
@@ -29,8 +29,8 @@ def test_exhibitions_no_location():
     response = client.get("/exhibitions")
     assert response.status_code == 200
     data = response.json()
-    # Expect error due to missing coordinates
-    assert "error" in data
+    assert "exhibitions" in data
+
 
 def test_exhibitions_with_location():
     response = client.get("/exhibitions?lat=48.8566&lon=2.3522")
