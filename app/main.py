@@ -98,4 +98,4 @@ async def generate_itinerary(
 
 # Run with: uvicorn app.main:app --reload
 if __name__ == "__main__":
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8080)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=False)

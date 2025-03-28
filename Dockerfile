@@ -15,7 +15,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 
 # Expose the port (match fly.toml)
-EXPOSE 8080
+EXPOSE 8000
 
 # Run the app (replace this with your actual start command if different)
 CMD ["python", "-m", "app.main"] 
