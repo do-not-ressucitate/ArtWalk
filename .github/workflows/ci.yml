@@ -35,10 +35,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Install Fly.io CLI
-        uses: superfly/flyctl-actions@1.2
-
-      - name: Deploy to Fly.io
-        run: fly deploy --config fly.toml --remote-only --no-cache
+      - name: Install latest Fly.io CLI
+        run: |
+          curl -L https://fly.io/install.sh | sh
+          export FLYCTL_INSTALL="/home/runner/.fly"
+          export PATH="$FLYCTL_INSTALL/bin:$PATH"
+          flyctl deploy --config fly.toml --remote-only --no-cache
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
