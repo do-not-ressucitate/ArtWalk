@@ -19,7 +19,7 @@ CATEGORY_MAP = {
 def search_places(lat: float, lon: float, category: str, radius: int = 3000):
     category_id = CATEGORY_MAP.get(category.lower())
     if not category_id:
-        print(f"[Foursquare] Invalid category: {category}")
+        print(f"[Foursquare] ❌ Invalid category: {category}")
         return []
 
     url = "https://api.foursquare.com/v3/places/search"
@@ -30,6 +30,10 @@ def search_places(lat: float, lon: float, category: str, radius: int = 3000):
         "open_now": True,
         "limit": 20
     }
+
+    print(f"[Foursquare] 📡 Sending request for category '{category}' at lat={lat}, lon={lon}")
+    print(f"[Foursquare] 🔍 URL: {url}")
+    print(f"[Foursquare] 📦 Params: {params}")
 
     try:
         response = requests.get(url, headers=HEADERS, params=params)
@@ -63,13 +67,16 @@ def search_places(lat: float, lon: float, category: str, radius: int = 3000):
 
 def get_photo(place_id):
     url = f"https://api.foursquare.com/v3/places/{place_id}/photos"
+    print(f"[Foursquare] 🖼️  Fetching photo for place_id: {place_id}")
     try:
         response = requests.get(url, headers=HEADERS)
         response.raise_for_status()
         data = response.json()
         if data:
             photo = data[0]
-            return f"{photo['prefix']}original{photo['suffix']}"
+            full_url = f"{photo['prefix']}original{photo['suffix']}"
+            print(f"[Foursquare] ✅ Photo found: {full_url}")
+            return full_url
     except Exception as e:
         print(f"[Foursquare] ⚠️ Photo fetch failed for {place_id}: {str(e)}")
     return None
