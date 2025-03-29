@@ -14,16 +14,17 @@ def get_live_galleries(
     location: Optional[str] = Query(None),
     radius: int = Query(3000)
 ):
-    """
-    Return open-now art galleries near the user using Foursquare.
-    Supports either GPS coordinates or a location name.
-    """
-    # Always prefer geocoding if a location string is provided
+    print("🚦 API hit: /galleries")
+    print(f"📍 Params received — lat: {lat}, lon: {lon}, location: {location}")
+
     if location:
         lat, lon = geocode_location(location)
+        print(f"🧭 Geocoded location '{location}' → ({lat}, {lon})")
 
     if not (lat and lon):
+        print("❌ No coordinates available after geocoding")
         return {"error": "Provide coordinates or a location name."}
 
     results = search_places(lat, lon, category="galleries", radius=radius)
+    print(f"🎯 Found {len(results)} galleries near ({lat}, {lon})")
     return {"galleries": results}
