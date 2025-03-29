@@ -51,11 +51,12 @@ async def root():
 # ------------------------------
 # ✅ REGISTER YOUR API ROUTERS
 # ------------------------------
-from app.api import places, michelin, exhibitions
+from app.api import places, michelin, exhibitions, itinerary
 
 app.include_router(places.router)
 app.include_router(michelin.router)
 app.include_router(exhibitions.router)
+app.include_router(itinerary.router)
 
 # ------------------------------
 # ✅ ITINERARY OPTIMIZATION LOGIC
