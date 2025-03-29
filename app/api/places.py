@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+# app/api/places.py
 
 from fastapi import APIRouter, Query
 from typing import Optional
@@ -15,11 +15,13 @@ def get_live_galleries(
     radius: int = Query(3000)
 ):
     """
-    Return open-now art galleries near the user.
-    Uses Foursquare search + optional geocoding.
+    Return open-now art galleries near the user using Foursquare.
+    Supports either GPS coordinates or a location name.
     """
-    if location and not (lat and lon):
+    # Always prefer geocoding if a location string is provided
+    if location:
         lat, lon = geocode_location(location)
+
     if not (lat and lon):
         return {"error": "Provide coordinates or a location name."}
 

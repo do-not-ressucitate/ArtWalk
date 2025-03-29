@@ -7,7 +7,7 @@ router = APIRouter()
 def get_michelin_restaurants(
     lat: float = Query(..., description="User latitude"),
     lon: float = Query(..., description="User longitude"),
-    radius: int = Query(3000, description="Search radius in meters")
+    radius: int = Query(900, description="Search radius in meters")
 ):
     """
     Returns a list of nearby Michelin restaurants within a given radius.

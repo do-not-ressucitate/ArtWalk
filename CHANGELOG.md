@@ -5,7 +5,7 @@ A timeline of major updates to the ArtWalk app and backend.
 ---
 
 ## [v0.1] – March 28, 2025  
-🚀 First CI/CD Deploy!
+🚀 Second CI/CD Deploy!
 
 - Full backend successfully deployed to Fly.io
 - GitHub Actions now runs tests + deploys automatically
