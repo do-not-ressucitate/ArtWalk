@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Query, Body
+# Path: artwalk-backend/app/api/itinerary.py
+
+from fastapi import APIRouter, Body
 from typing import List
 from geopy.distance import geodesic
 from pydantic import BaseModel
@@ -11,6 +13,7 @@ class Stop(BaseModel):
     name: str
     lat: float
     lon: float
+    address: str = "Unknown"
 
 class ItineraryRequest(BaseModel):
     user_lat: float
@@ -26,14 +29,13 @@ def generate_itinerary(req: ItineraryRequest):
     visit_time_min = 20
 
     all_routes = []
-    user_loc = {"name": "Start", "lat": req.user_lat, "lon": req.user_lon}
+    user_start = Stop(name="Start", lat=req.user_lat, lon=req.user_lon)
     max_time_minutes = req.available_time_hours * 60
 
-    # Generate all permutations of selected stops
     for perm in permutations(req.stops):
-        route = [user_loc] + list(perm)
+        route = [user_start] + list(perm)
         total_distance_km = sum(
-            geodesic((route[i]["lat"], route[i]["lon"]), (route[i + 1]["lat"], route[i + 1]["lon"])).km
+            geodesic((route[i].lat, route[i].lon), (route[i + 1].lat, route[i + 1].lon)).km
             for i in range(len(route) - 1)
         )
         walk_time_min = (total_distance_km / walking_speed_kmh) * 60
@@ -42,14 +44,16 @@ def generate_itinerary(req: ItineraryRequest):
 
         if total_duration <= max_time_minutes:
             all_routes.append({
-                "route": route,
+                "route": [stop.model_dump() for stop in route],
                 "distance_km": total_distance_km,
                 "duration_min": total_duration
             })
 
     if not all_routes:
-        # Try to trim stops if no routes fit
-        sorted_stops = sorted(req.stops, key=lambda stop: geodesic((req.user_lat, req.user_lon), (stop.lat, stop.lon)).km)
+        sorted_stops = sorted(
+            req.stops,
+            key=lambda stop: geodesic((req.user_lat, req.user_lon), (stop.lat, stop.lon)).km
+        )
         for i in range(len(sorted_stops), 1, -1):
             reduced_stops = sorted_stops[:i]
             trimmed_req = ItineraryRequest(
@@ -65,11 +69,10 @@ def generate_itinerary(req: ItineraryRequest):
 
         return {"error": "⏳ Not enough time to visit even two galleries."}
 
-    # Sort by theme
     if req.theme == "compact":
         best_routes = sorted(all_routes, key=lambda r: r["duration_min"])
     elif req.theme == "cultural":
-        best_routes = random.sample(all_routes, min(3, len(all_routes)))  # later: add POI logic
+        best_routes = random.sample(all_routes, min(3, len(all_routes)))
     else:
         best_routes = all_routes
 
@@ -77,5 +80,5 @@ def generate_itinerary(req: ItineraryRequest):
         "route": best_routes[0]["route"],
         "duration_min": round(best_routes[0]["duration_min"], 1),
         "distance_km": round(best_routes[0]["distance_km"], 2),
-        "alternatives": best_routes[1:3]
+        "alternatives": [r["route"] for r in best_routes[1:3]]
     }

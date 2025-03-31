@@ -60,7 +60,7 @@ def run_scraper():
 
         csv_path = os.path.join(data_dir, 'exhibitions_today.csv')
         with open(csv_path, mode="w", newline="", encoding="utf-8") as file:
-            writer = csv.DictWriter(file, fieldnames=["city", "label", "title", "gallery", "address", "thumbnail"])
+            writer = csv.DictWriter(...)
             writer.writeheader()
             writer.writerows(results)
 
